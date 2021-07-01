@@ -6,10 +6,12 @@
  */
 
 // dependencies
-const { sampleHandler } = require('./handlers/RouteHandler/sampleHandler');
+const { userHandler } = require("./handlers/RouteHandler/userHandler");
+const { sampleHandler } = require("./handlers/RouteHandler/sampleHandler");
 
 const routes = {
-    sample: sampleHandler,
+  sample: sampleHandler,
+  user: userHandler,
 };
 
 module.exports = routes;

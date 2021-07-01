@@ -14,9 +14,9 @@ const data = require("./lib/data");
 // app object module scaffolding
 const app = {};
 
-data.delete("test", "newFile", (err) => {
-  console.log("Delete file: ", err);
-});
+// data.delete("test", "newFile", (err) => {
+//   console.log("Delete file: ", err);
+// });
 
 // create server
 app.createServer = () => {
