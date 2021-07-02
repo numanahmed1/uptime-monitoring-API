@@ -9,6 +9,7 @@
 // dependencies
 const data = require("../../lib/data");
 const { hash, parseJSON } = require("../../helpers/utilities");
+const tokenHandler = require("./tokenHandler");
 
 // module scaffolding
 const handler = {};
@@ -33,15 +34,29 @@ handler._users.get = (requestProperties, callback) => {
       : false;
 
   if (phoneNumber) {
-    // lookup the user
-    data.read("users", phoneNumber, (err1, user) => {
-      let userData = { ...parseJSON(user) };
-      if (!err1 && userData) {
-        delete userData.password;
-        callback(200, userData);
+    // verify token
+    let token =
+      typeof requestProperties.headersObject.token === "string"
+        ? requestProperties.headersObject.token
+        : false;
+
+    tokenHandler._token.verify(token, phoneNumber, (tokenId) => {
+      if (tokenId) {
+        // lookup the user
+        data.read("users", phoneNumber, (err1, user) => {
+          let userData = { ...parseJSON(user) };
+          if (!err1 && userData) {
+            delete userData.password;
+            callback(200, userData);
+          } else {
+            callback(404, {
+              Error: "Requested user was not found!",
+            });
+          }
+        });
       } else {
-        callback(404, {
-          Error: "Requested user was not found!",
+        callback(403, {
+          Error: "Authentication failed!",
         });
       }
     });
@@ -142,35 +157,49 @@ handler._users.put = (requestProperties, callback) => {
 
   if (phoneNumber) {
     if (firstName || lastName || password) {
-      // lookup the user
-      data.read("users", phoneNumber, (err1, user) => {
-        const userData = { ...parseJSON(user) };
-        if (!err1 && userData) {
-          if (firstName) {
-            userData.firstName = firstName;
-          }
-          if (lastName) {
-            userData.lastName = lastName;
-          }
-          if (password) {
-            userData.password = hash(password);
-          }
+      // verify token
+      let token =
+        typeof requestProperties.headersObject.token === "string"
+          ? requestProperties.headersObject.token
+          : false;
 
-          // update the data
-          data.update("users", phoneNumber, userData, (err2) => {
-            if (!err2) {
-              callback(200, {
-                Message: "User was updated successfully.",
+      tokenHandler._token.verify(token, phoneNumber, (tokenId) => {
+        if (tokenId) {
+          // lookup the user
+          data.read("users", phoneNumber, (err1, user) => {
+            const userData = { ...parseJSON(user) };
+            if (!err1 && userData) {
+              if (firstName) {
+                userData.firstName = firstName;
+              }
+              if (lastName) {
+                userData.lastName = lastName;
+              }
+              if (password) {
+                userData.password = hash(password);
+              }
+
+              // update the data
+              data.update("users", phoneNumber, userData, (err2) => {
+                if (!err2) {
+                  callback(200, {
+                    Message: "User was updated successfully.",
+                  });
+                } else {
+                  callback(500, {
+                    Error: "There is a problem in server side!",
+                  });
+                }
               });
             } else {
-              callback(500, {
-                Error: "There is a problem in server side!",
+              callback(400, {
+                Error: "You have a problem in your request!",
               });
             }
           });
         } else {
-          callback(400, {
-            Error: "You have a problem in your request!",
+          callback(403, {
+            Error: "Authentication failed!",
           });
         }
       });
@@ -195,13 +224,27 @@ handler._users.delete = (requestProperties, callback) => {
       : false;
 
   if (phoneNumber) {
-    // lookup the user
-    data.read("users", phoneNumber, (err1, userData) => {
-      if (!err1 && userData) {
-        data.delete("users", phoneNumber, (err2) => {
-          if (!err2) {
-            callback(200, {
-              Error: "User is successfully deleted!",
+    // verify token
+    let token =
+      typeof requestProperties.headersObject.token === "string"
+        ? requestProperties.headersObject.token
+        : false;
+
+    tokenHandler._token.verify(token, phoneNumber, (tokenId) => {
+      if (tokenId) {
+        // lookup the user
+        data.read("users", phoneNumber, (err1, userData) => {
+          if (!err1 && userData) {
+            data.delete("users", phoneNumber, (err2) => {
+              if (!err2) {
+                callback(200, {
+                  Message: "User is successfully deleted!",
+                });
+              } else {
+                callback(500, {
+                  Error: "There is a problem in server side.",
+                });
+              }
             });
           } else {
             callback(500, {
@@ -210,8 +253,8 @@ handler._users.delete = (requestProperties, callback) => {
           }
         });
       } else {
-        callback(500, {
-          Error: "There is a problem in server side.",
+        callback(403, {
+          Error: "Authentication failed!",
         });
       }
     });
