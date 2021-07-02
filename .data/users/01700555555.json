@@ -3,5 +3,6 @@
   "lastName": "Ahmed",
   "phoneNumber": "01700555555",
   "password": "a13be9616bb90ee9fa17f7de18298dcd0f1cc63365378ccf8cdfa35f3138f4fe",
-  "termsAgreement": true
+  "termsAgreement": true,
+  "checks": ["hpzieq0lt8146w79yh8j"]
 }
