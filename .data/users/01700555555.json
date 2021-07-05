@@ -1,8 +1,1 @@
-{
-  "firstName": "Fahiyan",
-  "lastName": "Ahmed",
-  "phoneNumber": "01700555555",
-  "password": "a13be9616bb90ee9fa17f7de18298dcd0f1cc63365378ccf8cdfa35f3138f4fe",
-  "termsAgreement": true,
-  "checks": []
-}
+{"firstName":"Fahiyan","lastName":"Ahmed","phoneNumber":"01700555555","password":"a13be9616bb90ee9fa17f7de18298dcd0f1cc63365378ccf8cdfa35f3138f4fe","termsAgreement":true,"checks":["m0qbegcwfyil1uwi44py","6iel9lkrppv95x30ptlo","p5qkqvgci5hrh0hlrt16"]}
